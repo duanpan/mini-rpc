@@ -12,5 +12,6 @@ public interface UserService {
 
     User list();
 
+    User list(Integer userId);
 
 }

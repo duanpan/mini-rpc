@@ -1,6 +1,6 @@
 package com.mini.rpc.test.consumer.biz;
 
-import com.mini.rpc.core.annotation.RpcConsumer;
+import com.mini.rpc.core.consumer.RpcConsumer;
 import com.mini.rpc.test.provider.api.User;
 import com.mini.rpc.test.provider.api.UserService;
 import org.springframework.stereotype.Component;
@@ -18,5 +18,10 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public User getUser() {
         return userService.getById(1);
+    }
+
+    @Override
+    public User listUser(Integer userId) {
+        return userService.list(1);
     }
 }

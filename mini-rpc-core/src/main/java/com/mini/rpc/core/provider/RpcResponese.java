@@ -1,10 +1,8 @@
-package com.mini.rpc.core;
+package com.mini.rpc.core.provider;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
-
 
 /**
  * @Author dp
@@ -13,15 +11,13 @@ import org.springframework.stereotype.Component;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Component
-public class RpcRequest {
+public class RpcResponese {
     /**
-     * 服务名
+     * 响应状态
      **/
-    private String serviceName;
+    private Boolean sucess;
     /**
-     * 参数
+     * 响应数据
      **/
-    private Object[] args;
-
+    private Object data;
 }

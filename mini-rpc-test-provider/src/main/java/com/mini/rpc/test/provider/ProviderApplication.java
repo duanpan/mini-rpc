@@ -1,9 +1,6 @@
 package com.mini.rpc.test.provider;
 
-import com.mini.rpc.core.ProviderInfo;
-import com.mini.rpc.core.ProviderScan;
-import com.mini.rpc.core.RpcRequest;
-import com.mini.rpc.core.RpcResponese;
+import com.mini.rpc.core.provider.*;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -26,21 +23,19 @@ public class ProviderApplication {
         ConfigurableApplicationContext run = SpringApplication.run(ProviderApplication.class, args);
     }
 
-
     @PostMapping("rpc")
     public RpcResponese rpcInvoker(@RequestBody RpcRequest request) {
         return invok(request);
 
     }
 
-
     public RpcResponese invok(RpcRequest request) {
-       if (!ProviderScan.providers.containsKey(request.getServiceName())) {
-            throw new RuntimeException(request.getServiceName() + "未找到");
+        if (!ProviderCache.providers.containsKey(request.getServiceSign())) {
+            throw new RuntimeException(request.getServiceSign() + "未找到");
         }
 
         try {
-            ProviderInfo providerInfo = ProviderScan.providers.get(request.getServiceName());
+            RpcServiceInfo providerInfo = ProviderCache.providers.get(request.getServiceSign());
             Method method = providerInfo.getMethod();
             Object result = method.invoke(providerInfo.getService(), request.getArgs());
             return new RpcResponese(true, result);

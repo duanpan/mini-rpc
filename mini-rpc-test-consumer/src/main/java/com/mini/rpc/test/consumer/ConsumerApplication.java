@@ -20,5 +20,9 @@ public class ConsumerApplication {
         SystemService systemService = run.getBean(SystemService.class);
         User user = systemService.getUser();
         System.out.println(user);
+
+        User user1 = systemService.listUser(1);
+        System.out.println(user1);
+
     }
 }

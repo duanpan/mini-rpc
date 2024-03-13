@@ -1,4 +1,4 @@
-package com.mini.rpc.core.annotation;
+package com.mini.rpc.core.provider;
 
 import org.springframework.stereotype.Component;
 

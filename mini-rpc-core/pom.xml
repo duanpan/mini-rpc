@@ -37,5 +37,10 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.83_noneautotype</version>
         </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+            <version>3.3.0</version>
+        </dependency>
     </dependencies>
 </project>
