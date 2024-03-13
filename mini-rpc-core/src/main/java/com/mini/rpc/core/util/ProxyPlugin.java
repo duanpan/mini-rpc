@@ -1,9 +1,7 @@
 package com.mini.rpc.core.util;
 
-import com.mini.rpc.core.consumer.ConsumerInterceptor;
 import com.mini.rpc.core.consumer.ConsumerInvocation;
 import lombok.Data;
-import net.sf.cglib.proxy.Enhancer;
 
 import java.lang.reflect.Proxy;
 
@@ -21,14 +19,5 @@ public class ProxyPlugin {
                 new Class[]{itf},
                 new ConsumerInvocation(itf.getCanonicalName()));
     }
-
-
-    public static Object buildCglibProxy(Class<?> claz) {
-        Enhancer enhancer = new Enhancer();
-        enhancer.setSuperclass(claz);
-        enhancer.setCallback(new ConsumerInterceptor(claz.getCanonicalName()));
-        return enhancer.create();
-    }
-
 
 }

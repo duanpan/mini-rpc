@@ -1,6 +1,7 @@
 package com.mini.rpc.core.consumer;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mini.rpc.core.provider.RpcRequest;
 import com.mini.rpc.core.provider.RpcResponese;
 import com.mini.rpc.core.util.RpcUtil;
 import okhttp3.*;
@@ -30,24 +31,26 @@ public class ConsumerInvocation implements InvocationHandler {
         String rsp = callService(serviceSign, args);
         RpcResponese rpcResponese = JSONObject.parseObject(rsp, RpcResponese.class);
         String data = JSONObject.toJSONString(rpcResponese.getData());
-        return JSONObject.parseObject(data, (Type) method.getReturnType());
+        Object object = JSONObject.parseObject(data, (Type) method.getReturnType());
+        return object;
     }
 
 
     private String callService(String serviceSign, Object[] args) {
-        Map req = new HashMap();
-        req.put("serviceSign", serviceSign);
-        req.put("args", args);
-        RequestBody requestBody = RequestBody.create(JSONObject.toJSONString(req), MediaType.parse("application/json"));
+        RpcRequest request=new RpcRequest();
+        request.setServiceSign(serviceSign);
+        request.setArgs(args);
+        String body = JSONObject.toJSONString(request);
+        RequestBody requestBody = RequestBody.create(body, MediaType.parse("application/json"));
 
         OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url("http://localhost:8080/rpc")
+        Request httpRequest = new Request.Builder()
+                .url("http://localhost:8080/invok")
                 .post(requestBody)
                 .build();
 
         try {
-            Response response = client.newCall(request).execute();
+            Response response = client.newCall(httpRequest).execute();
             String responseBody = response.body().string();
             return responseBody;
         } catch (IOException e) {

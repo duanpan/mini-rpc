@@ -16,12 +16,17 @@ public class SystemServiceImpl implements SystemService {
     private UserService userService;
 
     @Override
-    public User getUser() {
-        return userService.getById(1);
-    }
+    public void test() {
+//        User user = userService.getUser(1,"2");
+//        System.out.println(user);
 
-    @Override
-    public User listUser(Integer userId) {
-        return userService.list(1);
+//        User user1 = userService.getUser(new User(2,"3"));
+//        System.out.println(user1);
+
+        User user2 = userService.list();
+        System.out.println(user2);
+//
+//        User user3 = userService.list(3);
+//        System.out.println(user3);
     }
 }

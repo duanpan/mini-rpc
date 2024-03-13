@@ -32,4 +32,9 @@ public class UserServiceImpl implements UserService {
     public User list(Integer userId) {
         return new User(userId, "list userId");
     }
+
+    @Override
+    public User getUser(User user) {
+        return user;
+    }
 }

@@ -8,7 +8,6 @@ import com.mini.rpc.test.provider.api.User;
  */
 public interface SystemService {
 
-    public User getUser();
+    public void test();
 
-    public User listUser(Integer userId);
 }
