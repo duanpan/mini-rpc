@@ -4,14 +4,12 @@ import com.alibaba.fastjson.JSONObject;
 import com.mini.rpc.core.provider.RpcRequest;
 import com.mini.rpc.core.provider.RpcResponese;
 import com.mini.rpc.core.util.RpcUtil;
+import com.mini.rpc.core.util.TypeUtil;
 import okhttp3.*;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author dp
@@ -30,9 +28,8 @@ public class ConsumerInvocation implements InvocationHandler {
         String serviceSign = RpcUtil.buildServiceSign(serviceName, method.getName(), method.getParameterTypes());
         String rsp = callService(serviceSign, args);
         RpcResponese rpcResponese = JSONObject.parseObject(rsp, RpcResponese.class);
-        String data = JSONObject.toJSONString(rpcResponese.getData());
-        Object object = JSONObject.parseObject(data, (Type) method.getReturnType());
-        return object;
+        Object data= TypeUtil.cast(rpcResponese.getData(),method.getReturnType());
+        return data;
     }
 
 

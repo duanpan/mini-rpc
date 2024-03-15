@@ -1,11 +1,10 @@
 package com.mini.rpc.core.provider;
 
-import com.alibaba.fastjson.JSON;
+import com.mini.rpc.core.util.TypeUtil;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
@@ -32,13 +31,11 @@ public class ProviderEndPoint {
             Object[] args = request.getArgs() == null ? request.getArgs() : paramTypeConver(request, providerInfo);
             Method method = providerInfo.getMethod();
             Object result = method.invoke(providerInfo.getService(), args);
-            return new RpcResponese(true, result);
-        } catch (IllegalAccessException e) {
+            return new RpcResponese(true, result, null);
+        } catch (Exception e) {
             e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            return new RpcResponese(false, null, e);
         }
-        return new RpcResponese(false, null);
     }
 
 
@@ -47,39 +44,9 @@ public class ProviderEndPoint {
         Type[] argsType = providerInfo.getArgsType();
         Object[] resultArgs = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
-            resultArgs[i] = getValueByType(argsType[i], args[i]);
+            resultArgs[i] = TypeUtil.cast(args[i], argsType[i]);
 
         }
         return resultArgs;
     }
-
-
-    Object getValueByType(Type type, Object value) {
-        if (value == null || value.equals("")) {
-            return value;
-        }
-
-        Object newValue;
-        String oldValue = value.toString();
-        if (type == Integer.TYPE || type == Integer.class) {
-            newValue = Integer.parseInt(oldValue);
-        } else if (type == Long.TYPE || type == Long.class) {
-            newValue = Long.parseLong(oldValue);
-        } else if (type == Float.TYPE || type == Float.class) {
-            newValue = Float.parseFloat(oldValue);
-        } else if (type == Double.TYPE || type == Double.class) {
-            newValue = Double.parseDouble(oldValue);
-        } else if (type == Boolean.TYPE || type == Boolean.class) {
-            newValue = Boolean.parseBoolean(oldValue);
-        } else if (type == Character.TYPE || type == Character.class) {
-            newValue = oldValue.charAt(0);
-        } else if (type == String.class) {
-            newValue = oldValue;
-        } else {
-            String s = JSON.toJSONString(value);
-            newValue = JSON.parseObject(s, type);
-        }
-        return newValue;
-    }
-
 }

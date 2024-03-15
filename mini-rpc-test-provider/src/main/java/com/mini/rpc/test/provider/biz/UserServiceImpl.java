@@ -5,6 +5,9 @@ import com.mini.rpc.test.provider.api.User;
 import com.mini.rpc.test.provider.api.UserService;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Author dp
  * @Date 2024/3/7
@@ -36,5 +39,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUser(User user) {
         return user;
+    }
+
+    @Override
+    public List<User> list(List<User> userList) {
+        return userList;
+    }
+
+    @Override
+    public int[] list(int[] userIdArrat) {
+        return userIdArrat;
+    }
+
+    @Override
+    public Map<String, String> list(Map<String, String> map) {
+        return map;
     }
 }

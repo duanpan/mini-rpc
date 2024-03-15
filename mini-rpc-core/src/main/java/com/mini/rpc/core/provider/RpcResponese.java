@@ -20,4 +20,6 @@ public class RpcResponese {
      * 响应数据
      **/
     private Object data;
+
+    private Exception e;
 }

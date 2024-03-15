@@ -39,7 +39,7 @@ public class ConsumerBootStrap{
 
             //创建代理 注入对象
             for (Field annotationFiled : annotationFileds) {
-                Object proxy = buildProxy(annotationFiled);
+                Object proxy =  ProxyPlugin.buildJdkProxy(annotationFiled.getType());
                 try {
                     annotationFiled.setAccessible(true);
                     annotationFiled.set(bean, proxy);
@@ -50,12 +50,6 @@ public class ConsumerBootStrap{
 
         }
 
-    }
-
-    private Object buildProxy(Field annotationFiled) {
-        boolean anInterface = annotationFiled.getType().isInterface();
-        Object proxy = anInterface ? ProxyPlugin.buildJdkProxy(annotationFiled.getType()) : ProxyPlugin.buildCglibProxy(annotationFiled.getType());
-        return proxy;
     }
 
 }
