@@ -3,6 +3,8 @@ package com.mini.rpc.test.provider.biz;
 import com.mini.rpc.core.provider.RpcProvider;
 import com.mini.rpc.test.provider.api.User;
 import com.mini.rpc.test.provider.api.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,6 +18,9 @@ import java.util.Map;
 @Component
 public class UserServiceImpl implements UserService {
 
+    @Autowired
+    private Environment environment;
+
     @Override
     public User getById(Integer userId) {
         return new User(userId, "rpc" + userId);
@@ -28,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUser(Integer userId, String userName) {
-        return new User(userId, userName);
+        return new User(userId, userName+"-"+environment.getProperty("server.port"));
     }
 
     @Override

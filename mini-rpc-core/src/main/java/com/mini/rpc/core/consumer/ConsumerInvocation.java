@@ -1,6 +1,8 @@
 package com.mini.rpc.core.consumer;
 
 import com.alibaba.fastjson.JSONObject;
+import com.mini.rpc.core.context.RpcContext;
+import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.provider.RpcRequest;
 import com.mini.rpc.core.provider.RpcResponese;
 import com.mini.rpc.core.util.RpcUtil;
@@ -10,6 +12,8 @@ import okhttp3.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Author dp
@@ -17,32 +21,32 @@ import java.lang.reflect.Method;
  */
 public class ConsumerInvocation implements InvocationHandler {
 
-    private String serviceName;
+    private  RpcContext context;
 
-    public ConsumerInvocation(String serviceName) {
-        this.serviceName = serviceName;
+    public ConsumerInvocation(RpcContext context) {
+        this.context=context;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        String serviceSign = RpcUtil.buildServiceSign(serviceName, method.getName(), method.getParameterTypes());
-        String rsp = callService(serviceSign, args);
+        String serviceSign = RpcUtil.buildServiceSign(context.getServiceName(), method.getName(), method.getParameterTypes());
+        RpcRequest request=new RpcRequest(serviceSign,args);
+        List<String> routes = context.getRouter().getRoute();
+        String url = context.getLoadBalancer().choose(routes);
+        String rsp = callService(request, url);
         RpcResponese rpcResponese = JSONObject.parseObject(rsp, RpcResponese.class);
         Object data= TypeUtil.cast(rpcResponese.getData(),method.getReturnType());
         return data;
     }
 
 
-    private String callService(String serviceSign, Object[] args) {
-        RpcRequest request=new RpcRequest();
-        request.setServiceSign(serviceSign);
-        request.setArgs(args);
+    private String callService(RpcRequest request,String url) {
         String body = JSONObject.toJSONString(request);
         RequestBody requestBody = RequestBody.create(body, MediaType.parse("application/json"));
 
         OkHttpClient client = new OkHttpClient();
         Request httpRequest = new Request.Builder()
-                .url("http://localhost:8080/invok")
+                .url(url)
                 .post(requestBody)
                 .build();
 

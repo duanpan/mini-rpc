@@ -1,6 +1,8 @@
 package com.mini.rpc.core.util;
 
 import com.mini.rpc.core.consumer.ConsumerInvocation;
+import com.mini.rpc.core.context.RpcContext;
+import com.mini.rpc.core.loadbalance.LoadBalancer;
 import lombok.Data;
 
 import java.lang.reflect.Proxy;
@@ -13,11 +15,11 @@ import java.lang.reflect.Proxy;
 public class ProxyPlugin {
 
 
-    public static Object buildJdkProxy(Class<?> itf) {
+    public static Object buildJdkProxy(Class<?> itf, RpcContext rpcContext) {
         return Proxy.newProxyInstance(
                 itf.getClassLoader(),
                 new Class[]{itf},
-                new ConsumerInvocation(itf.getCanonicalName()));
+                new ConsumerInvocation(rpcContext));
     }
 
 }
