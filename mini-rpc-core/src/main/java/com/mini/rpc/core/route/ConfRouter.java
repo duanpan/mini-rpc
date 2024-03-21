@@ -21,7 +21,7 @@ public class ConfRouter implements Router {
 
 
     @Override
-    public List<String> getRoute() {
+    public List<String> getRoute(String serviceSign) {
         String roteUrls = environment.getProperty("minirpc.provider.url");
         if (StringUtils.isBlank(roteUrls)) {
             return null;

@@ -2,9 +2,11 @@ package com.mini.rpc.core.consumer;
 
 import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.loadbalance.RandomLoadBalancer;
-import com.mini.rpc.core.loadbalance.RoudRobinLoadBalancer;
+import com.mini.rpc.core.registry.RegistryClient;
+import com.mini.rpc.core.registry.ZookeeperRegistryClient;
 import com.mini.rpc.core.route.ConfRouter;
 import com.mini.rpc.core.route.Router;
+import com.mini.rpc.core.route.ZkRouter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,7 +40,18 @@ public class ConsumerConfig {
     @Bean
     @ConditionalOnMissingBean(Router.class)
     public Router router(@Autowired Environment environment) {
-        return new ConfRouter(environment);
+        return new ZkRouter();
     }
+
+    @Bean
+    @ConditionalOnMissingBean(RegistryClient.class)
+    public RegistryClient registryClient() {
+        return new ZookeeperRegistryClient();
+    }
+
+
+
+
+
 
 }

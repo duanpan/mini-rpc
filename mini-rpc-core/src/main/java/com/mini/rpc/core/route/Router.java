@@ -8,6 +8,6 @@ import java.util.List;
  */
 public interface Router {
 
-    List<String> getRoute();
+    List<String> getRoute(String serviceSign);
 
 }

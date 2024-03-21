@@ -5,6 +5,7 @@ import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.route.Router;
 import com.mini.rpc.core.util.ProxyPlugin;
 import okhttp3.Route;
+import org.apache.curator.framework.CuratorFramework;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -24,6 +25,8 @@ public class ConsumerBootStrap {
     private LoadBalancer loadBalancer;
     @Autowired
     private Router router;
+    @Autowired
+    private CuratorFramework curatorFramework;
 
     
     public void consumerStart() {

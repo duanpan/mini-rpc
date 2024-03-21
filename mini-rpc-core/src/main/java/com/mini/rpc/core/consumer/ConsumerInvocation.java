@@ -31,7 +31,7 @@ public class ConsumerInvocation implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String serviceSign = RpcUtil.buildServiceSign(context.getServiceName(), method.getName(), method.getParameterTypes());
         RpcRequest request=new RpcRequest(serviceSign,args);
-        List<String> routes = context.getRouter().getRoute();
+        List<String> routes = context.getRouter().getRoute(serviceSign);
         String url = context.getLoadBalancer().choose(routes);
         String rsp = callService(request, url);
         RpcResponese rpcResponese = JSONObject.parseObject(rsp, RpcResponese.class);
@@ -43,10 +43,10 @@ public class ConsumerInvocation implements InvocationHandler {
     private String callService(RpcRequest request,String url) {
         String body = JSONObject.toJSONString(request);
         RequestBody requestBody = RequestBody.create(body, MediaType.parse("application/json"));
-
+        String remoteUrl="http://".concat(url).concat("/").concat("invok");
         OkHttpClient client = new OkHttpClient();
         Request httpRequest = new Request.Builder()
-                .url(url)
+                .url(remoteUrl)
                 .post(requestBody)
                 .build();
 

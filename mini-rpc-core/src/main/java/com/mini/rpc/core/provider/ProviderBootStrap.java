@@ -1,5 +1,6 @@
 package com.mini.rpc.core.provider;
 
+import com.mini.rpc.core.registry.ZookeeperRegistryServer;
 import com.mini.rpc.core.util.RpcUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -18,6 +19,9 @@ public class ProviderBootStrap {
 
     @Autowired
     private ApplicationContext applicationContext;
+    @Autowired
+    private ZookeeperRegistryServer registryServer;
+
 
     public void providerStart() {
         Map<String, Object> providerBeans = applicationContext.getBeansWithAnnotation(RpcProvider.class);
@@ -39,6 +43,7 @@ public class ProviderBootStrap {
                     serviceInfo.setArgsType(method.getParameterTypes());
                     String serviceSign = RpcUtil.buildServiceSign(serviceInfo);
                     ProviderCache.providers.put(serviceSign, serviceInfo);
+                    registryServer.register(serviceSign);
                 }
             }
         }
