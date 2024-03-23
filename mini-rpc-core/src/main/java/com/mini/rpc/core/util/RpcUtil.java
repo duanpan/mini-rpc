@@ -1,7 +1,10 @@
 package com.mini.rpc.core.util;
 
+import com.mini.rpc.core.consumer.ConsumerInvocation;
+import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.provider.RpcServiceInfo;
 
+import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +29,13 @@ public class RpcUtil {
         String paramSign = paramTypes.stream().collect(Collectors.joining("@"));
         String serviceSign = serviceName.concat(".").concat(methodName).concat("(").concat(paramSign).concat(")");
         return serviceSign;
+    }
+
+    public static Object buildJdkProxy(Class<?> itf, RpcContext rpcContext) {
+        return Proxy.newProxyInstance(
+                itf.getClassLoader(),
+                new Class[]{itf},
+                new ConsumerInvocation(rpcContext));
     }
 
 

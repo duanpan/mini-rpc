@@ -1,11 +1,11 @@
 package com.mini.rpc.core.provider;
 
-import com.mini.rpc.core.registry.ZookeeperRegistryServer;
+import com.mini.rpc.core.registry.RegistryCenter;
 import com.mini.rpc.core.util.RpcUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
-import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -20,10 +20,21 @@ public class ProviderBootStrap {
     @Autowired
     private ApplicationContext applicationContext;
     @Autowired
-    private ZookeeperRegistryServer registryServer;
+    private RegistryCenter registryCenter;
 
 
-    public void providerStart() {
+    public void start() {
+        registryCenter.start();
+        providerScan();
+        providerRegister();
+    }
+
+    @PreDestroy
+    public void stop(){
+        registryCenter.stop();
+    }
+
+    private void providerScan() {
         Map<String, Object> providerBeans = applicationContext.getBeansWithAnnotation(RpcProvider.class);
 
         for (Object service : providerBeans.values()) {
@@ -43,11 +54,13 @@ public class ProviderBootStrap {
                     serviceInfo.setArgsType(method.getParameterTypes());
                     String serviceSign = RpcUtil.buildServiceSign(serviceInfo);
                     ProviderCache.providers.put(serviceSign, serviceInfo);
-                    registryServer.register(serviceSign);
                 }
             }
         }
+    }
 
+    private void providerRegister() {
+        ProviderCache.providers.forEach((k, v) -> registryCenter.register(k));
     }
 
 }

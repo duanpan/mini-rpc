@@ -12,10 +12,10 @@ import org.springframework.boot.ApplicationRunner;
 public class ConsumerRunner implements ApplicationRunner {
 
     @Autowired
-    private  ConsumerBootStrap consumerBootStrap;
+    private ConsumerBootStrap consumerBootStrap;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        consumerBootStrap.consumerStart();
+        consumerBootStrap.start();
     }
 }

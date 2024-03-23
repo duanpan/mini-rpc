@@ -1,7 +1,7 @@
 package com.mini.rpc.core.provider;
 
-import com.mini.rpc.core.registry.RegistryServer;
-import com.mini.rpc.core.registry.ZookeeperRegistryServer;
+import com.mini.rpc.core.registry.RegistryCenter;
+import com.mini.rpc.core.registry.ZookeeperRegistry;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -29,21 +29,9 @@ public class ProviderConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean(CuratorFramework.class)
-    public CuratorFramework curatorFramework() {
-        String ZK_URL = "139.159.246.62:2181";
-        int TIME_OUT = 6000;
-        RetryPolicy policy = new ExponentialBackoffRetry(1000, 5, 6000);
-        CuratorFramework curatorFramework = CuratorFrameworkFactory.builder().retryPolicy(policy).connectString(ZK_URL).sessionTimeoutMs(TIME_OUT).build();
-        curatorFramework.start();
-        return curatorFramework;
+    @ConditionalOnMissingBean(RegistryCenter.class)
+    public RegistryCenter registryCenter() {
+        return new ZookeeperRegistry();
     }
-
-    @Bean
-    @ConditionalOnMissingBean(RegistryServer.class)
-    public ZookeeperRegistryServer registryServer() {
-        return new ZookeeperRegistryServer();
-    }
-
 
 }

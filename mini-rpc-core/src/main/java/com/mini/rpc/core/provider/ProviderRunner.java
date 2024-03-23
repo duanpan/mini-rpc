@@ -11,10 +11,10 @@ import org.springframework.boot.ApplicationRunner;
 public class ProviderRunner implements ApplicationRunner {
 
     @Autowired
-    private  ProviderBootStrap providerBootStrap;
+    private ProviderBootStrap providerBootStrap;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        providerBootStrap.providerStart();
+        providerBootStrap.start();
     }
 }

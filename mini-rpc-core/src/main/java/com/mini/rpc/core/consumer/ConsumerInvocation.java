@@ -21,32 +21,33 @@ import java.util.List;
  */
 public class ConsumerInvocation implements InvocationHandler {
 
-    private  RpcContext context;
+    private RpcContext context;
 
     public ConsumerInvocation(RpcContext context) {
-        this.context=context;
+        this.context = context;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String serviceSign = RpcUtil.buildServiceSign(context.getServiceName(), method.getName(), method.getParameterTypes());
-        RpcRequest request=new RpcRequest(serviceSign,args);
-        List<String> routes = context.getRouter().getRoute(serviceSign);
-        String url = context.getLoadBalancer().choose(routes);
-        String rsp = callService(request, url);
+        List<String> routes = context.getRegistryCenter().fetchServer(serviceSign);
+        String host = context.getLoadBalancer().choose(routes);
+        String remoteUrl = "http://".concat(host).concat("/").concat("invok");
+        RpcRequest request = new RpcRequest(serviceSign, args);
+        String rsp = callService(request, remoteUrl);
         RpcResponese rpcResponese = JSONObject.parseObject(rsp, RpcResponese.class);
-        Object data= TypeUtil.cast(rpcResponese.getData(),method.getReturnType());
+
+        Object data = TypeUtil.cast(rpcResponese.getData(), method.getReturnType());
         return data;
     }
 
 
-    private String callService(RpcRequest request,String url) {
+    private String callService(RpcRequest request, String url) {
         String body = JSONObject.toJSONString(request);
         RequestBody requestBody = RequestBody.create(body, MediaType.parse("application/json"));
-        String remoteUrl="http://".concat(url).concat("/").concat("invok");
         OkHttpClient client = new OkHttpClient();
         Request httpRequest = new Request.Builder()
-                .url(remoteUrl)
+                .url(url)
                 .post(requestBody)
                 .build();
 

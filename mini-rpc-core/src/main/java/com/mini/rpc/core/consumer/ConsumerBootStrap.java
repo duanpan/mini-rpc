@@ -2,10 +2,8 @@ package com.mini.rpc.core.consumer;
 
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
-import com.mini.rpc.core.route.Router;
-import com.mini.rpc.core.util.ProxyPlugin;
-import okhttp3.Route;
-import org.apache.curator.framework.CuratorFramework;
+import com.mini.rpc.core.registry.RegistryCenter;
+import com.mini.rpc.core.util.RpcUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -24,12 +22,10 @@ public class ConsumerBootStrap {
     @Autowired
     private LoadBalancer loadBalancer;
     @Autowired
-    private Router router;
-    @Autowired
-    private CuratorFramework curatorFramework;
+    private RegistryCenter registryCenter;
 
-    
-    public void consumerStart() {
+
+    public void start() {
         String[] beanDefinitionNames = applicationContext.getBeanDefinitionNames();
 
         //扫描带有RpcConsumer注解的属性
@@ -49,8 +45,8 @@ public class ConsumerBootStrap {
 
             //创建代理 注入对象
             for (Field annotationFiled : annotationFileds) {
-                RpcContext rpcContext = new RpcContext(router, loadBalancer, annotationFiled.getType().getCanonicalName());
-                Object proxy = ProxyPlugin.buildJdkProxy(annotationFiled.getType(), rpcContext);
+                RpcContext rpcContext = new RpcContext(registryCenter, loadBalancer, annotationFiled.getType().getCanonicalName());
+                Object proxy = RpcUtil.buildJdkProxy(annotationFiled.getType(), rpcContext);
                 try {
                     annotationFiled.setAccessible(true);
                     annotationFiled.set(bean, proxy);
@@ -62,5 +58,6 @@ public class ConsumerBootStrap {
         }
 
     }
+
 
 }
