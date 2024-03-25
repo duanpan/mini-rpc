@@ -20,9 +20,15 @@ public class SystemServiceImpl implements SystemService {
     private UserService userService;
 
     @Override
+
     public void test() {
-        User user = userService.getUser(1,"2");
-        System.out.println(user);
+        try {
+            User user = userService.getUser(1,"2");
+            System.out.println(user);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
 //
 //        User user1 = userService.getUser(new User(2,"3"));
 //        System.out.println(user1);

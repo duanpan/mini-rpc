@@ -30,8 +30,8 @@ public class ConsumerInvocation implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         String serviceSign = RpcUtil.buildServiceSign(context.getServiceName(), method.getName(), method.getParameterTypes());
-        List<String> routes = context.getRegistryCenter().fetchServer(serviceSign);
-        String host = context.getLoadBalancer().choose(routes);
+        List<String> providers = context.getRegistryCenter().fetchServer(serviceSign);
+        String host = context.getLoadBalancer().choose(providers);
         String remoteUrl = "http://".concat(host).concat("/").concat("invok");
         RpcRequest request = new RpcRequest(serviceSign, args);
         String rsp = callService(request, remoteUrl);

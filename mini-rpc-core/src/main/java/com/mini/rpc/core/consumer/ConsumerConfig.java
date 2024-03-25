@@ -2,7 +2,7 @@ package com.mini.rpc.core.consumer;
 
 import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.loadbalance.RandomLoadBalancer;
-import org.springframework.boot.ApplicationRunner;
+import com.mini.rpc.core.start.ConsumerBootStrap;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,10 +19,10 @@ public class ConsumerConfig {
         return new ConsumerBootStrap();
     }
 
-    @Bean
-    public ApplicationRunner consumerRunner() {
-        return new ConsumerRunner();
-    }
+//    @Bean
+//    public ApplicationRunner consumerRunner() {
+//        return new ConsumerRunner();
+//    }
 
     @Bean
     @ConditionalOnMissingBean(LoadBalancer.class)
