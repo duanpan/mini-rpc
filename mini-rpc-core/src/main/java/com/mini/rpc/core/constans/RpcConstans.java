@@ -16,7 +16,7 @@ public class RpcConstans {
     /**
      * 注册中心命名空间名
      */
-    public static final String REGISTRY_NAMESPACE = "/mini-rpc/";
+    public static final String REGISTRY_NAMESPACE = "/mini-rpc";
 
     /**
      * 本地注册中心地址环境变量名

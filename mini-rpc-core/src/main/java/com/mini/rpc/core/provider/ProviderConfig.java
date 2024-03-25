@@ -1,15 +1,14 @@
 package com.mini.rpc.core.provider;
 
 import com.mini.rpc.core.registry.RegistryCenter;
-import com.mini.rpc.core.registry.ZookeeperRegistry;
-import org.apache.curator.RetryPolicy;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
+import com.mini.rpc.core.registry.ZookeeperRegistryCenter;
+import com.mini.rpc.core.start.ProviderBootStrap;
+import com.mini.rpc.core.start.RpcRunner;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 /**
  * @Author dp
@@ -24,14 +23,15 @@ public class ProviderConfig {
     }
 
     @Bean
-    public ApplicationRunner providerRunner() {
-        return new ProviderRunner();
+    @Order(Integer.MAX_VALUE)
+    public ApplicationRunner rpcRunner() {
+        return new RpcRunner();
     }
 
     @Bean
     @ConditionalOnMissingBean(RegistryCenter.class)
     public RegistryCenter registryCenter() {
-        return new ZookeeperRegistry();
+        return new ZookeeperRegistryCenter();
     }
 
 }

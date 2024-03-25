@@ -9,13 +9,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 配置文件注册
+ * 配置文件注册中心
  *
  * @Author dp
  * @Date 2024/3/23
  */
 @Data
-public class ConfigRegistry implements RegistryCenter {
+public class SaticConfigRegistryCenter implements RegistryCenter {
 
     private final Environment environment;
 
