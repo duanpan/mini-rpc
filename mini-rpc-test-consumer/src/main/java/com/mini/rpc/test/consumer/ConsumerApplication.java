@@ -1,8 +1,7 @@
 package com.mini.rpc.test.consumer;
 
-import com.mini.rpc.core.consumer.RpcConsumer;
+import com.mini.rpc.core.annotation.RpcConsumer;
 import com.mini.rpc.test.consumer.biz.SystemService;
-import com.mini.rpc.test.provider.api.User;
 import com.mini.rpc.test.provider.api.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

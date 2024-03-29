@@ -21,5 +21,5 @@ public class RpcResponese {
      **/
     private Object data;
 
-    private Exception e;
+    private Exception ex;
 }

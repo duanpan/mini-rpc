@@ -13,16 +13,14 @@ import java.lang.reflect.Type;
  * @Date 2024/3/13
  */
 @RestController
-public class ProviderEndPoint {
+public class ProviderInvoker {
 
     @PostMapping("/invok")
     public RpcResponese rpcInvoker(@RequestBody RpcRequest request) {
         if (!ProviderCache.providers.containsKey(request.getServiceSign())) {
             throw new RuntimeException(request.getServiceSign() + "未找到");
         }
-
         return invok(request);
-
     }
 
     public RpcResponese invok(RpcRequest request) {

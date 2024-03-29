@@ -2,7 +2,6 @@ package com.mini.rpc.core.consumer;
 
 import com.alibaba.fastjson.JSONObject;
 import com.mini.rpc.core.context.RpcContext;
-import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.provider.RpcRequest;
 import com.mini.rpc.core.provider.RpcResponese;
 import com.mini.rpc.core.util.RpcUtil;
@@ -12,7 +11,6 @@ import okhttp3.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

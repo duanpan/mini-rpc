@@ -1,13 +1,9 @@
 package com.mini.rpc.test.consumer.biz;
 
-import com.mini.rpc.core.consumer.RpcConsumer;
+import com.mini.rpc.core.annotation.RpcConsumer;
 import com.mini.rpc.test.provider.api.User;
 import com.mini.rpc.test.provider.api.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
 
 /**
  * @Author dp

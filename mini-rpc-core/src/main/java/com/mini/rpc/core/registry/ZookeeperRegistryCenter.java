@@ -1,6 +1,7 @@
 package com.mini.rpc.core.registry;
 
 import com.mini.rpc.core.constans.RpcConstans;
+import com.mini.rpc.core.consumer.ConsumerCache;
 import com.mini.rpc.core.provider.ProviderCache;
 import com.mini.rpc.core.provider.RpcServiceInfo;
 import com.mini.rpc.core.util.MapUtil;
@@ -10,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.RetryPolicy;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.framework.recipes.cache.NodeCache;
-import org.apache.curator.framework.recipes.cache.PathChildrenCache;
 import org.apache.curator.framework.recipes.cache.TreeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.zookeeper.CreateMode;
@@ -19,8 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import java.net.InetAddress;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * zookeeper注册中心
@@ -34,12 +33,11 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
     @Autowired
     private Environment environment;
     private CuratorFramework curator;
-    private ConcurrentHashMap<String, List<String>> provideHosts = new ConcurrentHashMap();
 
     @Override
     @SneakyThrows
     public List<String> fetchServer(String serviceSign) {
-        return provideHosts.get(serviceSign);
+        return ConsumerCache.providesOnline.get(serviceSign);
     }
 
     @Override
@@ -56,9 +54,13 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
     @Override
     @SneakyThrows
     public void unRegister(String serviceSign) {
-        String nodeName = RpcConstans.REGISTRY_NAMESPACE.concat("/").concat(serviceSign);
-        if (curator.checkExists().forPath(nodeName) == null) return;
-        curator.delete().forPath(nodeName);
+        String ip = InetAddress.getLocalHost().getHostAddress();
+        String port = environment.getProperty(RpcConstans.SERVER_PORT_ENV);
+        String nodeName = RpcConstans.REGISTRY_NAMESPACE.concat("/").concat(serviceSign).concat("/").concat(ip).concat(":").concat(port);
+        if (curator.checkExists().forPath(nodeName) == null) {
+            return;
+        }
+        curator.delete().deletingChildrenIfNeeded().forPath(nodeName);
         log.info("服务下线:{}", nodeName);
     }
 
@@ -89,7 +91,7 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
 
     @Override
     @SneakyThrows
-    public void nodeChangeListner() {
+    public void subscribe() {
         TreeCache cache=TreeCache.newBuilder(curator, RpcConstans.REGISTRY_NAMESPACE).setCacheData(true).setMaxDepth(2).build();
         cache.getListenable().addListener((client, event) -> {
             doNodeInit(client);
@@ -100,12 +102,12 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
 
     @SneakyThrows
     public synchronized void doNodeInit(CuratorFramework client) {
-        provideHosts.clear();
+        ConsumerCache.providesOnline.clear();
         List<String> services = client.getChildren().forPath(RpcConstans.REGISTRY_NAMESPACE);
         for (String service : services) {
             String servicePath = RpcConstans.REGISTRY_NAMESPACE.concat("/").concat(service);
             List<String> nodes = client.getChildren().forPath(servicePath);
-            MapUtil.addMultiValue(provideHosts, service, nodes);
+            MapUtil.addMultiValue(ConsumerCache.providesOnline, service, nodes);
         }
     }
 

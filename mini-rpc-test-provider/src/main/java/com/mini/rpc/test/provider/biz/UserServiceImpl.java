@@ -1,6 +1,6 @@
 package com.mini.rpc.test.provider.biz;
 
-import com.mini.rpc.core.provider.RpcProvider;
+import com.mini.rpc.core.annotation.RpcProvider;
 import com.mini.rpc.test.provider.api.User;
 import com.mini.rpc.test.provider.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

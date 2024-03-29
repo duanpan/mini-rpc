@@ -19,11 +19,6 @@ public class ConsumerConfig {
         return new ConsumerBootStrap();
     }
 
-//    @Bean
-//    public ApplicationRunner consumerRunner() {
-//        return new ConsumerRunner();
-//    }
-
     @Bean
     @ConditionalOnMissingBean(LoadBalancer.class)
     public LoadBalancer loadBalancer() {

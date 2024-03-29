@@ -1,6 +1,6 @@
 package com.mini.rpc.core.start;
 
-import com.mini.rpc.core.consumer.RpcConsumer;
+import com.mini.rpc.core.annotation.RpcConsumer;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.entity.ConsumerFiled;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
@@ -11,9 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
 import java.lang.reflect.Field;
-import java.util.AbstractList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -33,9 +31,12 @@ public class ConsumerBootStrap {
     public void start() {
         proxyInject(consumerScan());
         registryCenter.nodeInit();
-        registryCenter.nodeChangeListner();
+        registryCenter.subscribe();
     }
 
+    public void stop(){
+
+    }
 
     /**
      * 扫描带有RpcConsumer注解的属性

@@ -1,4 +1,4 @@
-package com.mini.rpc.core.consumer;
+package com.mini.rpc.core.annotation;
 
 import java.lang.annotation.*;
 

@@ -43,9 +43,9 @@ public interface RegistryCenter {
     }
 
     /**
-     * 节点变更
+     * 节点变更订阅
      */
-    default void nodeChangeListner() {
+    default void subscribe() {
     }
 
 
