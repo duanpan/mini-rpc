@@ -1,6 +1,5 @@
 package com.mini.rpc.core.registry;
 
-import com.mini.rpc.core.consumer.ConsumerInstance;
 import com.mini.rpc.core.provider.ProviderInstance;
 
 import java.util.List;

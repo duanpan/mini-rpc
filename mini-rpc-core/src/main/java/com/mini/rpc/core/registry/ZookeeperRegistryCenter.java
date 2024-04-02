@@ -2,7 +2,6 @@ package com.mini.rpc.core.registry;
 
 import com.mini.rpc.core.constans.RpcConstans;
 import com.mini.rpc.core.consumer.ConsumerCache;
-import com.mini.rpc.core.consumer.ConsumerInstance;
 import com.mini.rpc.core.properties.RpcAppProperties;
 import com.mini.rpc.core.properties.RpcRegistryProperties;
 import com.mini.rpc.core.provider.ProviderCache;
@@ -23,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -89,7 +90,6 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
     }
 
 
-
     @Override
     @SneakyThrows
     public void nodeInit() {
@@ -109,23 +109,24 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
     @Override
     @SneakyThrows
     public List<String> fetchServer(String serviceSign) {
-        return ConsumerCache.providesOnline.get(serviceSign);
+        return new ArrayList<>(ConsumerCache.providesOnline.get(serviceSign));
     }
 
     @SneakyThrows
     public synchronized void doNodeInit(CuratorFramework client) {
-        ConsumerCache.providesOnline.clear();
         String appPrefix = String.format("/%s/%s/%s", appProperties.getNamespace(), appProperties.getProtocol(),
                 appProperties.getEnv());
         List<String> services = client.getChildren().forPath(appPrefix);
         for (String service : services) {
             String servicePath = appPrefix.concat("/").concat(service);
             List<String> nodes = client.getChildren().forPath(servicePath);
-            MapUtil.addMultiValue(ConsumerCache.providesOnline, service, nodes);
+            if (ConsumerCache.providesOnline.containsKey(service)) {
+                ConsumerCache.providesOnline.get(service).addAll(nodes);
+            } else {
+                ConsumerCache.providesOnline.put(service, new HashSet<>(nodes));
+            }
         }
     }
-
-
 
 
 }

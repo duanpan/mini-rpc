@@ -1,8 +1,6 @@
 package com.mini.rpc.core.registry;
 
 import com.mini.rpc.core.constans.RpcConstans;
-import com.mini.rpc.core.consumer.ConsumerInstance;
-import com.mini.rpc.core.provider.ProviderInstance;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;

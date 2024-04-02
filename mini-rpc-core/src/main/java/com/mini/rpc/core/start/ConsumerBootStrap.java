@@ -1,7 +1,7 @@
 package com.mini.rpc.core.start;
 
 import com.mini.rpc.core.annotation.RpcConsumer;
-import com.mini.rpc.core.consumer.ConsumerInstance;
+import com.mini.rpc.core.consumer.ConsumerCache;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.entity.ConsumerFiled;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
@@ -74,13 +74,20 @@ public class ConsumerBootStrap {
     private void proxyInject(List<ConsumerFiled> consumerFiledList) {
         for (ConsumerFiled consumerFiled : consumerFiledList) {
             //获取服务信息
-            RpcContext rpcContext = new  RpcContext();
+            RpcContext rpcContext = new RpcContext();
+            String serviceName = consumerFiled.getField().getType().getCanonicalName();
             rpcContext.setRegistryCenter(registryCenter);
             rpcContext.setLoadBalancer(loadBalancer);
-            rpcContext.setServiceName(consumerFiled.getField().getType().getCanonicalName());
+            rpcContext.setServiceName(serviceName);
 
             //构建代理对象
-            Object proxy = RpcBuildHelper.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
+            Object proxy = null;
+            if (ConsumerCache.proxyCache.containsKey(serviceName)) {
+                proxy = ConsumerCache.proxyCache.get(serviceName);
+            } else {
+                proxy = RpcBuildHelper.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
+                ConsumerCache.proxyCache.put(serviceName, proxy);
+            }
             consumerFiled.getField().setAccessible(true);
             consumerFiled.getField().set(consumerFiled.getBean(), proxy);
         }

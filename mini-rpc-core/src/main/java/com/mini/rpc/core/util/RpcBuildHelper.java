@@ -1,6 +1,5 @@
 package com.mini.rpc.core.util;
 
-import com.mini.rpc.core.consumer.ConsumerInstance;
 import com.mini.rpc.core.consumer.ConsumerInvocation;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.properties.RpcAppProperties;
@@ -53,15 +52,6 @@ public class RpcBuildHelper {
         instance.setServiceSign(serviceSign);
         instance.setIp(ip);
         instance.setPort(serverPort);
-        return instance;
-    }
-
-    public static ConsumerInstance buildConsumerInstance(RpcAppProperties appProperties, String serviceSign) {
-        ConsumerInstance instance = new ConsumerInstance();
-        instance.setNamespace(appProperties.getNamespace());
-        instance.setProtocol(appProperties.getProtocol());
-        instance.setEnv(appProperties.getEnv());
-        instance.setServiceSign(serviceSign);
         return instance;
     }
 

@@ -22,10 +22,10 @@ public class ConsumerApplication {
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(ConsumerApplication.class, args);
         SystemService systemService = run.getBean(SystemService.class);
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1000; i++) {
             systemService.test();
             try {
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
