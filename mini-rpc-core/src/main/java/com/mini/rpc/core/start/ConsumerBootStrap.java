@@ -1,11 +1,13 @@
 package com.mini.rpc.core.start;
 
 import com.mini.rpc.core.annotation.RpcConsumer;
+import com.mini.rpc.core.consumer.ConsumerInstance;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.entity.ConsumerFiled;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
+import com.mini.rpc.core.properties.RpcAppProperties;
 import com.mini.rpc.core.registry.RegistryCenter;
-import com.mini.rpc.core.util.RpcUtil;
+import com.mini.rpc.core.util.RpcBuildHelper;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -26,6 +28,8 @@ public class ConsumerBootStrap {
     private LoadBalancer loadBalancer;
     @Autowired
     private RegistryCenter registryCenter;
+    @Autowired
+    private RpcAppProperties appProperties;
 
 
     public void start() {
@@ -34,7 +38,7 @@ public class ConsumerBootStrap {
         registryCenter.subscribe();
     }
 
-    public void stop(){
+    public void stop() {
 
     }
 
@@ -69,8 +73,14 @@ public class ConsumerBootStrap {
     @SneakyThrows
     private void proxyInject(List<ConsumerFiled> consumerFiledList) {
         for (ConsumerFiled consumerFiled : consumerFiledList) {
-            RpcContext rpcContext = new RpcContext(registryCenter, loadBalancer, consumerFiled.getField().getType().getCanonicalName());
-            Object proxy = RpcUtil.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
+            //获取服务信息
+            RpcContext rpcContext = new  RpcContext();
+            rpcContext.setRegistryCenter(registryCenter);
+            rpcContext.setLoadBalancer(loadBalancer);
+            rpcContext.setServiceName(consumerFiled.getField().getType().getCanonicalName());
+
+            //构建代理对象
+            Object proxy = RpcBuildHelper.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
             consumerFiled.getField().setAccessible(true);
             consumerFiled.getField().set(consumerFiled.getBean(), proxy);
         }

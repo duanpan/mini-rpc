@@ -43,7 +43,6 @@ public class ProviderInvoker {
         Object[] resultArgs = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
             resultArgs[i] = TypeUtil.cast(args[i], argsType[i]);
-
         }
         return resultArgs;
     }

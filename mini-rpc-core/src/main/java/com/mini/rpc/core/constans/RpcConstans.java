@@ -13,11 +13,11 @@ public class RpcConstans {
      */
     public static final String SERVER_PORT_ENV = "server.port";
 
+
     /**
      * 注册中心命名空间名
      */
     public static final String REGISTRY_NAMESPACE = "/mini-rpc";
-
     /**
      * 本地注册中心地址环境变量名
      */

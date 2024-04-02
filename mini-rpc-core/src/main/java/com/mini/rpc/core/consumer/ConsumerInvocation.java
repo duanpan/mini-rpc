@@ -4,7 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.provider.RpcRequest;
 import com.mini.rpc.core.provider.RpcResponese;
-import com.mini.rpc.core.util.RpcUtil;
+import com.mini.rpc.core.provider.ProviderInstance;
+import com.mini.rpc.core.util.RpcBuildHelper;
 import com.mini.rpc.core.util.TypeUtil;
 import okhttp3.*;
 
@@ -21,13 +22,15 @@ public class ConsumerInvocation implements InvocationHandler {
 
     private RpcContext context;
 
+
     public ConsumerInvocation(RpcContext context) {
         this.context = context;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        String serviceSign = RpcUtil.buildServiceSign(context.getServiceName(), method.getName(), method.getParameterTypes());
+
+        String serviceSign=RpcBuildHelper.buildServiceSign(context.getServiceName(), method.getName(), method.getParameterTypes());
         List<String> providers = context.getRegistryCenter().fetchServer(serviceSign);
         String host = context.getLoadBalancer().choose(providers);
         String remoteUrl = "http://".concat(host).concat("/").concat("invok");

@@ -3,5 +3,10 @@ server:
 
 minirpc:
   registry:
-    zk: 139.159.246.62:2181
-    local: http://localhost:8080/invok,http://localhost:8081/invok
+    type: zk
+    url: 139.159.246.62:2181
+  app:
+    namespace: minirpc
+    name: test
+    protocol: http
+    env: dev

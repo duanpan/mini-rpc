@@ -1,5 +1,8 @@
 package com.mini.rpc.core.registry;
 
+import com.mini.rpc.core.consumer.ConsumerInstance;
+import com.mini.rpc.core.provider.ProviderInstance;
+
 import java.util.List;
 
 /**
@@ -21,13 +24,13 @@ public interface RegistryCenter {
     /**
      * 注册服务
      */
-    default void register(String serviceSign) {
+    default void register(ProviderInstance providerInstance) {
     }
 
     /**
      * 取消注册服务
      */
-    default void unRegister(String serviceSign) {
+    default void unRegister(ProviderInstance providerInstance) {
     }
 
     /**
@@ -42,17 +45,19 @@ public interface RegistryCenter {
     default void stop() {
     }
 
+
     /**
      * 节点变更订阅
      */
     default void subscribe() {
     }
 
-
     /**
      * 节点初始化
      */
     default void nodeInit() {
+
+
     }
 
 }

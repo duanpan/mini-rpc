@@ -1,5 +1,6 @@
 package com.mini.rpc.core.provider;
 
+import com.mini.rpc.core.properties.RpcRegistryProperties;
 import com.mini.rpc.core.registry.RegistryCenter;
 import com.mini.rpc.core.registry.ZookeeperRegistryCenter;
 import com.mini.rpc.core.start.ProviderBootStrap;

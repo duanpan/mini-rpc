@@ -1,8 +1,10 @@
 package com.mini.rpc.core.context;
 
 import com.mini.rpc.core.loadbalance.LoadBalancer;
+import com.mini.rpc.core.provider.ProviderInstance;
 import com.mini.rpc.core.registry.RegistryCenter;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@Builder
 public class RpcContext {
 
     private RegistryCenter registryCenter;
