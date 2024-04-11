@@ -5,6 +5,7 @@ import com.mini.rpc.core.consumer.ConsumerCache;
 import com.mini.rpc.core.consumer.HttpClient;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.entity.ConsumerFiled;
+import com.mini.rpc.core.filter.Filter;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.registry.RegistryCenter;
 import com.mini.rpc.core.helper.MetaBuildHelper;
@@ -16,6 +17,8 @@ import org.springframework.context.ApplicationContext;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author dp
@@ -76,7 +79,6 @@ public class ConsumerBootStrap {
     @SneakyThrows
     private void proxyInject(List<ConsumerFiled> consumerFiledList) {
         for (ConsumerFiled consumerFiled : consumerFiledList) {
-            //获取服务信息
             RpcContext rpcContext = new RpcContext();
             String serviceName = consumerFiled.getField().getType().getCanonicalName();
             rpcContext.setRegistryCenter(registryCenter);
@@ -84,15 +86,15 @@ public class ConsumerBootStrap {
             rpcContext.setServiceName(serviceName);
             rpcContext.setHttpClient(httpClient);
             rpcContext.setRpcBuildHelper(rpcBuildHelper);
+            Map<String, Filter> beansOfType = applicationContext.getBeansOfType(Filter.class);
+            rpcContext.setFilters(beansOfType.values().stream().collect(Collectors.toList()));
 
             //构建代理对象
-            Object proxy = null;
-            if (ConsumerCache.proxyCache.containsKey(serviceName)) {
-                proxy = ConsumerCache.proxyCache.get(serviceName);
-            } else {
-                proxy = RpcUtil.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
+            if (!ConsumerCache.proxyCache.containsKey(serviceName)) {
+                Object proxy = RpcUtil.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
                 ConsumerCache.proxyCache.put(serviceName, proxy);
             }
+            Object proxy = ConsumerCache.proxyCache.get(serviceName);
             consumerFiled.getField().setAccessible(true);
             consumerFiled.getField().set(consumerFiled.getBean(), proxy);
         }

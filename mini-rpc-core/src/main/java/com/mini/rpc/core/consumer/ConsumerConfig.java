@@ -1,5 +1,7 @@
 package com.mini.rpc.core.consumer;
 
+import com.mini.rpc.core.filter.ParamTransferFilter;
+import com.mini.rpc.core.filter.Filter;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.loadbalance.RandomLoadBalancer;
 import com.mini.rpc.core.start.ConsumerBootStrap;
@@ -26,8 +28,14 @@ public class ConsumerConfig {
     }
 
     @Bean
+    @ConditionalOnMissingBean(HttpClient.class)
     public HttpClient httpClient() {
         return new MyOkHttpClient();
+    }
+
+    @Bean
+    public Filter paramFilter() {
+        return new ParamTransferFilter();
     }
 
 }

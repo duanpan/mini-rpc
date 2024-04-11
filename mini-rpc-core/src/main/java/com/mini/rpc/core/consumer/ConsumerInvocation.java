@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.entity.ProviderInstance;
 import com.mini.rpc.core.entity.ServiceMeta;
+import com.mini.rpc.core.filter.Filter;
 import com.mini.rpc.core.provider.RpcRequest;
 import com.mini.rpc.core.provider.RpcResponese;
 import com.mini.rpc.core.util.TypeUtil;
@@ -32,9 +33,18 @@ public class ConsumerInvocation implements InvocationHandler {
         List<ProviderInstance> providers = context.getRegistryCenter().fetchServer(serviceMeta);
         ProviderInstance provider = context.getLoadBalancer().choose(providers);
 
-        RpcRequest request = new RpcRequest(serviceMeta.getServiceSign(), args);
+        RpcRequest request = RpcRequest.builder()
+                .serviceSign(serviceMeta.getServiceSign())
+                .args(args).build();
+
+        List<Filter> filters = context.getFilters();
+        filters.forEach(f -> f.pre(request));
+
         Object rsp = context.getHttpClient().post(provider.getCallUrl(), JSONObject.toJSONString(request));
         RpcResponese rpcResponese = JSON.parseObject(rsp.toString(), RpcResponese.class);
+
+        filters.forEach(f -> f.post(request, rpcResponese));
+
         Object data = TypeUtil.cast(rpcResponese.getData(), method.getReturnType(), method.getGenericReturnType());
         return data;
     }
