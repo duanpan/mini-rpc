@@ -1,5 +1,7 @@
 package com.mini.rpc.core.loadbalance;
 
+import com.mini.rpc.core.entity.ProviderInstance;
+
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
 public abstract  class AbstractLoadBalancer  implements LoadBalancer{
 
     @Override
-    public String choose(List<String> urls) {
+    public ProviderInstance choose(List<ProviderInstance> urls) {
         if (urls == null || urls.size() < 1) {
             return null;
         }
@@ -20,5 +22,5 @@ public abstract  class AbstractLoadBalancer  implements LoadBalancer{
         return doChoose(urls);
     }
 
-    abstract String doChoose(List<String> urls);
+    abstract ProviderInstance doChoose(List<ProviderInstance> urls);
 }

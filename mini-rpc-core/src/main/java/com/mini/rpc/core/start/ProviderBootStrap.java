@@ -1,21 +1,17 @@
 package com.mini.rpc.core.start;
 
-import com.mini.rpc.core.properties.RpcAppProperties;
 import com.mini.rpc.core.provider.ProviderCache;
 import com.mini.rpc.core.annotation.RpcProvider;
-import com.mini.rpc.core.provider.RpcServiceInfo;
-import com.mini.rpc.core.provider.ProviderInstance;
+import com.mini.rpc.core.entity.ProviderMeta;
+import com.mini.rpc.core.entity.ServiceMeta;
 import com.mini.rpc.core.registry.RegistryCenter;
-import com.mini.rpc.core.util.RpcBuildHelper;
+import com.mini.rpc.core.helper.MetaBuildHelper;
+import com.mini.rpc.core.util.RpcUtil;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 
 import java.lang.reflect.Method;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 
 /**
@@ -31,11 +27,7 @@ public class ProviderBootStrap {
     @Autowired
     private RegistryCenter registryCenter;
     @Autowired
-    private Environment environment;
-    @Autowired
-    private RpcAppProperties appProperties;
-    @Value("${server.port}")
-    private String serverPort;
+    private MetaBuildHelper rpcBuildHelper;
 
 
     public void start() {
@@ -47,13 +39,8 @@ public class ProviderBootStrap {
     @SneakyThrows
     public void stop() {
         ProviderCache.providers.forEach((k, v) -> {
-            try {
-                String ip = InetAddress.getLocalHost().getHostAddress();
-                ProviderInstance providerInstance = RpcBuildHelper.buildInstance(appProperties, k, ip, serverPort);
-                registryCenter.unRegister(providerInstance);
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            ServiceMeta serviceInstance = rpcBuildHelper.buildServiceMeta(k);
+            registryCenter.unRegister(serviceInstance);
         });
 
     }
@@ -70,13 +57,13 @@ public class ProviderBootStrap {
                 if (methods == null) continue;
 
                 for (Method method : methods) {
-                    RpcServiceInfo serviceInfo = new RpcServiceInfo();
+                    ProviderMeta serviceInfo = new ProviderMeta();
                     serviceInfo.setServiceName(itf.getCanonicalName());
                     serviceInfo.setService(service);
                     serviceInfo.setMethodName(method.getName());
                     serviceInfo.setMethod(method);
                     serviceInfo.setArgsType(method.getParameterTypes());
-                    String serviceSign = RpcBuildHelper.buildServiceSign(serviceInfo);
+                    String serviceSign = RpcUtil.buildServiceSign(serviceInfo);
                     ProviderCache.providers.put(serviceSign, serviceInfo);
                 }
             }
@@ -85,10 +72,9 @@ public class ProviderBootStrap {
 
     @SneakyThrows
     private void providerRegister() {
-        String ip = InetAddress.getLocalHost().getHostAddress();
         ProviderCache.providers.forEach((k, v) -> {
-            ProviderInstance providerInstance = RpcBuildHelper.buildInstance(appProperties, k, ip, serverPort);
-            registryCenter.register(providerInstance);
+            ServiceMeta serviceMeta = rpcBuildHelper.buildServiceMeta(k);
+            registryCenter.register(serviceMeta);
         });
     }
 

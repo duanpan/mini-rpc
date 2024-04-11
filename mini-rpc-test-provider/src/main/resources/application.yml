@@ -3,7 +3,7 @@ server:
 
 minirpc:
   registry:
-    type: zk
+    type: zookeeper
     url: 139.159.246.62:2181
   app:
     namespace: minirpc

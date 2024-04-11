@@ -1,5 +1,7 @@
 package com.mini.rpc.core.loadbalance;
 
+import com.mini.rpc.core.entity.ProviderInstance;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -14,7 +16,7 @@ public class RoudRobinLoadBalancer extends AbstractLoadBalancer {
     AtomicInteger atomicInteger = new AtomicInteger(0);
 
     @Override
-    String doChoose(List<String> urls) {
+    ProviderInstance doChoose(List<ProviderInstance> urls) {
         return urls.get(Math.abs(atomicInteger.getAndIncrement() % urls.size()));
     }
 

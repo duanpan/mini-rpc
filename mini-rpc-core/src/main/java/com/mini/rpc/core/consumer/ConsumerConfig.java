@@ -25,4 +25,9 @@ public class ConsumerConfig {
         return new RandomLoadBalancer();
     }
 
+    @Bean
+    public HttpClient httpClient() {
+        return new MyOkHttpClient();
+    }
+
 }

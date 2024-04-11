@@ -1,5 +1,7 @@
 package com.mini.rpc.core.loadbalance;
 
+import com.mini.rpc.core.entity.ProviderInstance;
+
 import java.util.List;
 import java.util.Random;
 
@@ -14,11 +16,8 @@ public class RandomLoadBalancer extends AbstractLoadBalancer {
     Random random = new Random();
 
     @Override
-    String doChoose(List<String> urls) {
+    ProviderInstance doChoose(List<ProviderInstance> urls) {
         int i = random.nextInt(urls.size());
-        System.out.println(urls);
-        System.out.println(i);
-        System.out.println(urls.get(i));
         return urls.get(i);
     }
 }

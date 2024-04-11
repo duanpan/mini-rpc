@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ConsumerCache {
 
-    public static ConcurrentHashMap<String, Set<String>> providesOnline= new ConcurrentHashMap();
+    public static ConcurrentHashMap<String, List<String>> providesOnline= new ConcurrentHashMap();
 
     public static Map<String,Object> proxyCache=new HashMap();
 

@@ -1,4 +1,4 @@
-package com.mini.rpc.core.provider;
+package com.mini.rpc.core.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +14,7 @@ import java.lang.reflect.Type;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RpcServiceInfo {
+public class ProviderMeta {
     /**
      * 服务名
      **/

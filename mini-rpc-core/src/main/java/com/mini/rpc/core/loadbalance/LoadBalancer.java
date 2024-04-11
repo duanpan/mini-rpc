@@ -1,5 +1,7 @@
 package com.mini.rpc.core.loadbalance;
 
+import com.mini.rpc.core.entity.ProviderInstance;
+
 import java.util.List;
 
 /**
@@ -10,6 +12,6 @@ import java.util.List;
  */
 public interface LoadBalancer {
 
-    String choose(List<String> urls);
+    ProviderInstance choose(List<ProviderInstance> urls);
 
 }

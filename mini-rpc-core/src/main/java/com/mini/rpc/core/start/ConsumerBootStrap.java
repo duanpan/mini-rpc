@@ -2,12 +2,13 @@ package com.mini.rpc.core.start;
 
 import com.mini.rpc.core.annotation.RpcConsumer;
 import com.mini.rpc.core.consumer.ConsumerCache;
+import com.mini.rpc.core.consumer.HttpClient;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.entity.ConsumerFiled;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
-import com.mini.rpc.core.properties.RpcAppProperties;
 import com.mini.rpc.core.registry.RegistryCenter;
-import com.mini.rpc.core.util.RpcBuildHelper;
+import com.mini.rpc.core.helper.MetaBuildHelper;
+import com.mini.rpc.core.util.RpcUtil;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -29,7 +30,9 @@ public class ConsumerBootStrap {
     @Autowired
     private RegistryCenter registryCenter;
     @Autowired
-    private RpcAppProperties appProperties;
+    private HttpClient httpClient;
+    @Autowired
+    private MetaBuildHelper rpcBuildHelper;
 
 
     public void start() {
@@ -79,13 +82,15 @@ public class ConsumerBootStrap {
             rpcContext.setRegistryCenter(registryCenter);
             rpcContext.setLoadBalancer(loadBalancer);
             rpcContext.setServiceName(serviceName);
+            rpcContext.setHttpClient(httpClient);
+            rpcContext.setRpcBuildHelper(rpcBuildHelper);
 
             //构建代理对象
             Object proxy = null;
             if (ConsumerCache.proxyCache.containsKey(serviceName)) {
                 proxy = ConsumerCache.proxyCache.get(serviceName);
             } else {
-                proxy = RpcBuildHelper.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
+                proxy = RpcUtil.buildJdkProxy(consumerFiled.getField().getType(), rpcContext);
                 ConsumerCache.proxyCache.put(serviceName, proxy);
             }
             consumerFiled.getField().setAccessible(true);

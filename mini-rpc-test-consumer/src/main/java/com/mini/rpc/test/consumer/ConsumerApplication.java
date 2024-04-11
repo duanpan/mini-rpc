@@ -2,6 +2,7 @@ package com.mini.rpc.test.consumer;
 
 import com.mini.rpc.core.annotation.RpcConsumer;
 import com.mini.rpc.test.consumer.biz.SystemService;
+import com.mini.rpc.test.consumer.test.TestTypeCastService;
 import com.mini.rpc.test.provider.api.UserService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,15 +22,7 @@ public class ConsumerApplication {
 
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(ConsumerApplication.class, args);
-        SystemService systemService = run.getBean(SystemService.class);
-        for (int i = 0; i < 1000; i++) {
-            systemService.test();
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
+        TestTypeCastService typeCastService = run.getBean(TestTypeCastService.class);
+        typeCastService.typeCast();
     }
 }

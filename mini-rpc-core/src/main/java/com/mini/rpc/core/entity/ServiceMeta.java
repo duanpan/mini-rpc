@@ -1,17 +1,19 @@
-package com.mini.rpc.core.provider;
+package com.mini.rpc.core.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Map;
+
 /**
- * 注册实例
+ * 服务消费者定义 元数据
  *
  * @Author dp
  * @Date 2024/4/2
  */
 @Data
 @EqualsAndHashCode
-public class ProviderInstance {
+public class ServiceMeta {
 
     /**
      * 命名空间
@@ -37,5 +39,20 @@ public class ProviderInstance {
      * 服务端口
      */
     private String port;
+
+    /**
+     * 扩展参数
+     */
+    private Map<String,String> expand;
+
+
+    public String toNodeUrl() {
+        return String.format("/%s/%s/%s/%s/%s:%s", namespace, protocol, env, serviceSign, ip, port);
+    }
+
+    public String getNodeName() {
+        return String.format("/%s/%s/%s/%s", namespace, protocol, env, serviceSign);
+    }
+
 
 }
