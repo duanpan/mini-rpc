@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.mini.rpc.core.constans.RpcConstans;
 import com.mini.rpc.core.consumer.ConsumerCache;
 import com.mini.rpc.core.entity.ProviderInstance;
+import com.mini.rpc.core.exception.RpcException;
 import com.mini.rpc.core.properties.RpcAppProperties;
 import com.mini.rpc.core.properties.RpcRegistryProperties;
 import com.mini.rpc.core.provider.ProviderCache;
@@ -23,6 +24,7 @@ import org.apache.zookeeper.CreateMode;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,20 +43,16 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
     private RpcAppProperties appProperties;
     @Autowired
     private RpcRegistryProperties registryProperties;
-    @Autowired
-    private MetaBuildHelper rpcBuildHelper;
 
 
     @Override
-    @SneakyThrows
-    public void register(ServiceMeta serviceMeta) {
+    public void register(ServiceMeta serviceMeta) throws Exception {
         curator.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(serviceMeta.toNodeUrl(), "".getBytes());
         log.info("服务注册:{}", serviceMeta.toNodeUrl());
     }
 
     @Override
-    @SneakyThrows
-    public void unRegister(ServiceMeta serviceMeta) {
+    public void unRegister(ServiceMeta serviceMeta) throws Exception {
         String nodeUrl = serviceMeta.toNodeUrl();
         if (curator.checkExists().forPath(nodeUrl) == null) {
             return;
@@ -64,7 +62,7 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    public void start() {
+    public void start() throws Exception {
         if (registryProperties.getType().equals("zookeeper")) {
             String zkHost = registryProperties.getUrl();
             if (StringUtils.isBlank(zkHost)) {
@@ -78,59 +76,63 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
     }
 
     @Override
-    @SneakyThrows
-    public void stop() {
-        Map<String, ProviderMeta> providers = ProviderCache.providers;
-        providers.forEach((k, v) -> {
-            ServiceMeta serviceMeta = rpcBuildHelper.buildServiceMeta(k);
-            unRegister(serviceMeta);
-        });
+    public void stop() throws Exception {
+        curator.close();
     }
 
 
     @Override
-    @SneakyThrows
-    public void nodeInit() {
-        doNodeInit(curator);
+    public void nodeInit() throws Exception {
+        try {
+            doNodeInit(curator);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
-    @SneakyThrows
-    public void subscribe() {
-        TreeCache cache = TreeCache.newBuilder(curator, RpcConstans.REGISTRY_NAMESPACE).setCacheData(true).setMaxDepth(2).build();
-        cache.getListenable().addListener((client, event) -> {
-            doNodeInit(client);
-        });
-        cache.start();
+    public void subscribe() throws Exception {
+        try {
+            TreeCache cache = TreeCache.newBuilder(curator, RpcConstans.REGISTRY_NAMESPACE).setCacheData(true).setMaxDepth(2).build();
+            cache.getListenable().addListener((client, event) -> {
+                doNodeInit(client);
+            });
+            cache.start();
+        } catch (Exception e) {
+            throw new RpcException(e);
+        }
     }
 
     @Override
-    @SneakyThrows
-    public List<ProviderInstance> fetchServer(ServiceMeta serviceMeta) {
+    public List<ProviderInstance> fetchServer(ServiceMeta serviceMeta) throws Exception {
         String serviceNodeName = serviceMeta.getNodeName();
-        List<String> nodes = curator.getChildren().forPath(serviceNodeName);
+        List<String> nodes = null;
+        try {
+            nodes = curator.getChildren().forPath(serviceNodeName);
+        } catch (Exception e) {
+            throw new RpcException(e);
+        }
 
         List<ProviderInstance> providerInstances = nodes.stream().map(node -> {
             try {
                 ProviderInstance instance = new ProviderInstance();
                 instance.setIp(node.substring(0, node.indexOf(":")));
-                instance.setPort(node.substring(node.indexOf(":")+1, node.length()));
+                instance.setPort(node.substring(node.indexOf(":") + 1, node.length()));
                 instance.setProtocol(serviceMeta.getProtocol());
                 return instance;
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                throw e;
             }
         }).collect(Collectors.toList());
 
         return providerInstances;
     }
 
-    @SneakyThrows
-    public void doNodeInit(CuratorFramework client) {
+    public void doNodeInit(CuratorFramework client) throws Exception {
         String appPrefix = String.format("/%s/%s/%s", appProperties.getNamespace(), appProperties.getProtocol(),
                 appProperties.getEnv());
-        List<String> services = client.getChildren().forPath(appPrefix);
+        List<String> services = null;
+        services = client.getChildren().forPath(appPrefix);
         for (String service : services) {
             String servicePath = appPrefix.concat("/").concat(service);
             List<String> nodes = client.getChildren().forPath(servicePath);
@@ -140,6 +142,7 @@ public class ZookeeperRegistryCenter implements RegistryCenter {
                 ConsumerCache.providesOnline.put(service, Lists.newArrayList(nodes));
             }
         }
+
     }
 
 

@@ -6,11 +6,10 @@ import com.mini.rpc.core.consumer.HttpClient;
 import com.mini.rpc.core.context.RpcContext;
 import com.mini.rpc.core.entity.ConsumerFiled;
 import com.mini.rpc.core.filter.Filter;
+import com.mini.rpc.core.helper.MetaBuildHelper;
 import com.mini.rpc.core.loadbalance.LoadBalancer;
 import com.mini.rpc.core.registry.RegistryCenter;
-import com.mini.rpc.core.helper.MetaBuildHelper;
 import com.mini.rpc.core.util.RpcUtil;
-import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 
@@ -38,7 +37,7 @@ public class ConsumerBootStrap {
     private MetaBuildHelper rpcBuildHelper;
 
 
-    public void start() {
+    public void start() throws Exception{
         proxyInject(consumerScan());
         registryCenter.nodeInit();
         registryCenter.subscribe();
@@ -76,8 +75,7 @@ public class ConsumerBootStrap {
      *
      * @param consumerFiledList
      */
-    @SneakyThrows
-    private void proxyInject(List<ConsumerFiled> consumerFiledList) {
+    private void proxyInject(List<ConsumerFiled> consumerFiledList) throws Exception{
         for (ConsumerFiled consumerFiled : consumerFiledList) {
             RpcContext rpcContext = new RpcContext();
             String serviceName = consumerFiled.getField().getType().getCanonicalName();

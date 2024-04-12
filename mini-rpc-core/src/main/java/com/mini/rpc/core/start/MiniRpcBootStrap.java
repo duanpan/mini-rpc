@@ -22,17 +22,26 @@ public class MiniRpcBootStrap implements ApplicationRunner {
 
 
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-        registryCenter.start();
-        providerBootStrap.start();
-        consumerBootStrap.start();
+    public void run(ApplicationArguments args) {
+        try {
+            registryCenter.start();
+            providerBootStrap.start();
+            consumerBootStrap.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     @PreDestroy
     public void stop() {
-        consumerBootStrap.stop();
-        providerBootStrap.stop();
-        registryCenter.stop();
+        try {
+            consumerBootStrap.stop();
+            providerBootStrap.stop();
+            registryCenter.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

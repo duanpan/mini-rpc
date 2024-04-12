@@ -19,43 +19,43 @@ public interface RegistryCenter {
      * @param serviceSign 服务签名
      * @return List<String>
      */
-    List<ProviderInstance> fetchServer(ServiceMeta serviceMeta);
+    List<ProviderInstance> fetchServer(ServiceMeta serviceMeta) throws Exception;
 
     /**
      * 注册服务
      */
-    default void register(ServiceMeta serviceMeta) {
+    default void register(ServiceMeta serviceMeta) throws Exception{
     }
 
     /**
      * 取消注册服务
      */
-    default void unRegister(ServiceMeta serviceMeta) {
+    default void unRegister(ServiceMeta serviceMeta) throws Exception {
     }
 
     /**
      * 启动注册中心
      */
-    default void start() {
+    default void start() throws Exception{
     }
 
     /**
      * 停止注册中心
      */
-    default void stop() {
+    default void stop() throws Exception{
     }
 
 
     /**
      * 节点变更订阅
      */
-    default void subscribe() {
+    default void subscribe() throws Exception{
     }
 
     /**
      * 节点初始化
      */
-    default void nodeInit() {
+    default void nodeInit() throws Exception{
 
 
     }
