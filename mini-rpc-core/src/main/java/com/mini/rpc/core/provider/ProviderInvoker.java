@@ -25,6 +25,7 @@ public class ProviderInvoker {
         }
 
         try {
+            //TODO 上下文参数继续保存传递
             ProviderMeta providerInfo = ProviderCache.providers.get(request.getServiceSign());
             Object[] args = request.getArgs() == null ? request.getArgs() : paramTypeConver(request, providerInfo);
             Method method = providerInfo.getMethod();
@@ -45,6 +46,10 @@ public class ProviderInvoker {
         for (int i = 0; i < args.length; i++) {
             resultArgs[i] = TypeUtil.cast(args[i], argsType[i], genericParameterTypes[i]);
         }
+        String string="11";
+        "字符串".intern();
         return resultArgs;
+
+
     }
 }

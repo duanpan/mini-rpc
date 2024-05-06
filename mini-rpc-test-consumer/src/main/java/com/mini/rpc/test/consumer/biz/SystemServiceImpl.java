@@ -17,14 +17,16 @@ public class SystemServiceImpl implements SystemService {
 
     @Override
 
-    public void test() {
+    public Object timeout() {
         try {
-            User user = userService.getUser(1,"2");
+            User user = userService.timeOut();
             System.out.println(user);
-        }catch (Exception e){
+            return user;
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
+        return null;
 //
 //        User user1 = userService.getUser(new User(2,"3"));
 //        System.out.println(user1);

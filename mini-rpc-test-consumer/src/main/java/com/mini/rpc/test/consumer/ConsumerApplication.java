@@ -17,12 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SpringBootApplication(scanBasePackages = "com.mini.rpc")
 public class ConsumerApplication {
 
-    @RpcConsumer
-    private  UserService userService;
-
     public static void main(String[] args) {
         ConfigurableApplicationContext run = SpringApplication.run(ConsumerApplication.class, args);
-        TestTypeCastService typeCastService = run.getBean(TestTypeCastService.class);
-        typeCastService.typeCast();
     }
 }

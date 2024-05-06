@@ -9,14 +9,16 @@ import java.util.concurrent.TimeUnit;
  * @Author dp
  * @Date 2024/4/10
  */
-public class MyOkHttpClient implements HttpClient{
+public class MyOkHttpClient implements HttpClient {
 
     OkHttpClient client;
 
     public MyOkHttpClient() {
         ConnectionPool connectionPool = new ConnectionPool(200, 20, TimeUnit.MINUTES);
-         client = new OkHttpClient.Builder()
+        client = new OkHttpClient.Builder()
                 .connectionPool(connectionPool)
+                .readTimeout(1,TimeUnit.SECONDS)
+                .callTimeout(1,TimeUnit.SECONDS)
                 .build();
     }
 

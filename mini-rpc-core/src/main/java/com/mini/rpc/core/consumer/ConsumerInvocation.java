@@ -12,6 +12,7 @@ import com.mini.rpc.core.util.TypeUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.net.SocketTimeoutException;
 import java.util.List;
 
 /**
@@ -22,31 +23,61 @@ public class ConsumerInvocation implements InvocationHandler {
 
     private RpcContext context;
 
-
     public ConsumerInvocation(RpcContext context) {
         this.context = context;
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        List<Filter> filters = context.getFilters();
         ServiceMeta serviceMeta = context.getRpcBuildHelper().buildServiceMeta(context.getServiceName(), method.getName(), method.getParameterTypes());
         List<ProviderInstance> providers = context.getRegistryCenter().fetchServer(serviceMeta);
         ProviderInstance provider = context.getLoadBalancer().choose(providers);
-
         RpcRequest request = RpcRequest.builder()
                 .serviceSign(serviceMeta.getServiceSign())
                 .args(args).build();
 
-        List<Filter> filters = context.getFilters();
+        //过滤器 before
         filters.forEach(f -> f.pre(request));
 
-        Object rsp = context.getHttpClient().post(provider.getCallUrl(), JSONObject.toJSONString(request));
-        RpcResponese rpcResponese = JSON.parseObject(rsp.toString(), RpcResponese.class);
+        //执行请求
+        RpcResponese responese = invoke(provider.getCallUrl(), request);
 
-        filters.forEach(f -> f.post(request, rpcResponese));
+        //过滤器 after
+        RpcResponese finalResponese = responese;
+        filters.forEach(f -> f.post(request, finalResponese));
 
-        Object data = TypeUtil.cast(rpcResponese.getData(), method.getReturnType(), method.getGenericReturnType());
+        Object data = TypeUtil.cast(responese.getData(), method.getReturnType(), method.getGenericReturnType());
         return data;
+    }
+
+    private RpcResponese invoke(String callUrl, RpcRequest request) throws Throwable {
+        RpcResponese responese = null;
+        int retry = 3 + 1;
+        while (retry > 0) {
+            try {
+                retry--;
+                responese = doInvoke(callUrl, request);
+            } catch (SocketTimeoutException timeoutException) {
+                if (retry == 0) {
+                    throw new RuntimeException("请求超时");
+                }
+                System.out.println("【超时重试】-------->");
+            }
+
+            if (responese != null) {
+                break;
+            }
+
+        }
+        return responese;
+    }
+
+
+    private RpcResponese doInvoke(String url, RpcRequest request) throws Throwable {
+        Object rsp = context.getHttpClient().post(url, JSONObject.toJSONString(request));
+        RpcResponese rpcResponese = JSON.parseObject(rsp.toString(), RpcResponese.class);
+        return rpcResponese;
     }
 
 

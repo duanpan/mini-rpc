@@ -8,6 +8,6 @@ import com.mini.rpc.test.provider.api.User;
  */
 public interface SystemService {
 
-    public void test();
+     Object timeout();
 
 }

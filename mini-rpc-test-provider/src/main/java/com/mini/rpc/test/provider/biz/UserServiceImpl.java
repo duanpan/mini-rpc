@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @Author dp
@@ -28,6 +29,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User list() {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return new User(666, "rpc-list");
+    }
+
+    @Override
+    public User timeOut() {
+        try {
+            Random random=new Random();
+            int i = random.nextInt(2);
+            if(i==1){
+                Thread.sleep(10000);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return new User(666, "rpc-list");
     }
 
@@ -60,4 +80,5 @@ public class UserServiceImpl implements UserService {
     public Map<String, String> list(Map<String, String> map) {
         return map;
     }
+
 }

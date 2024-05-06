@@ -17,6 +17,8 @@ public interface UserService {
 
     User list();
 
+    User timeOut();
+
     User list(Integer userId);
 
     List<User> list(List<User> userList);
